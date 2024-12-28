@@ -1,11 +1,15 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { SiteConfig } from '../types.js';
+import { SiteConfig } from '../../types.js';
+
+/*
+  Manages loading the json configs into application
+*/
 
 class ConfigLoader {
   private config: SiteConfig[] = [];
 
-  async loadConfig(): Promise<void> {
+  async loadConfigs(): Promise<void> {
     try {
       // Get the directory path just outside the application's directory
       const configDirectory = "../configs";
@@ -30,9 +34,9 @@ class ConfigLoader {
     }
   }
 
-  getConfigs(): SiteConfig[] {
+  public getConfigs(): SiteConfig[] {
     return this.config;
   }
 }
 
-export default new ConfigLoader();
+export default ConfigLoader;

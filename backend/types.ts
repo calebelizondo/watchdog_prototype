@@ -1,7 +1,8 @@
 export type SiteConfig = {
     name: string,
     url: string,
-    regex: string
+    regex: string,
+    base_url: string,
 }
 
 export type PressRelease = {

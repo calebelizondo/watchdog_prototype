@@ -1,0 +1,10 @@
+The following is an example for how to add a new source to the scraper: 
+
+{
+    "name": "What name do you want to appear in the UI for this source?",
+    "url": "The central hub where all the press releases are posted",
+    "base_url": "the above url before any forward slashes",
+    "regex": "matching pattern. needs to contain 'title' and 'link' capture group"
+}
+
+Also, make sure you save it as a json file!
