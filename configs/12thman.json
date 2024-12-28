@@ -1,5 +1,5 @@
 {
-    "title": "12thman", 
+    "name": "12thman", 
     "url": "https://12thman.com/archives",
-    "regex": ""
+    "regex": "<a href=\"(?<link>[^\"]+)\"[^>]*>[^<]*<span[^>]*>(?<title>.*?)<\/span>.*?<\/a>"
 }
