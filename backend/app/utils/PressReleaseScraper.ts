@@ -1,4 +1,5 @@
-import ConfigLoader from "./ConfigLoader.js";
+import Article from "#models/article";
+import Source from "#models/source";
 import axios from 'axios';
 
 export type ReleaseCapture = {
@@ -7,35 +8,28 @@ export type ReleaseCapture = {
     //what is its title?
     title: string;
     //what is the url?
-    link: string;
+    url: string;
 }
 
 class PressReleaseScraper {
-    //get the press releases from the urls
-    configLoader = new ConfigLoader();
 
     public async fetchNewPressReleases() {
 
-        //get any newly created configs
-        (await this.configLoader.loadConfigs());
-
         let releases: ReleaseCapture[] = [];
-        for (const config of (this.configLoader.getConfigs())) { 
+        for (const config of (await Source.all())) { 
 
             try {
                 const {name, url, regex, base_url} = config;
-                const response = axios.get(url);
-                const html = (await response).data;
 
-                const matches = [...html.matchAll(new RegExp(regex, 'g'))];
-
-                matches.forEach((match) => {
-                    releases.push( {
-                        title: match.groups.title, 
-                        source: name,
-                        link: PressReleaseScraper.parseUrl(match.groups.link, base_url)
-                    })
-                });
+                (await PressReleaseScraper.scrape(url, regex)).forEach((match: {title: string, link: string}) => 
+                    {
+                        releases.push({
+                            title: match.title,
+                            url: PressReleaseScraper.parseUrl(match.link, base_url),
+                            source: name
+                        })
+                    }
+                );
 
             } catch {
 
@@ -57,14 +51,36 @@ class PressReleaseScraper {
 
     //commit release objects to the database
     public commitReleases(releases: ReleaseCapture[]) {
-        for (const release in releases) {
-            //check if it is already present
-
-
-            //if not, commit
-
-
+        for (const release of releases) {
+            try {
+                Article.create({...release})
+            } catch {
+                continue;
+            }
         }
+    }
+
+    public static async scrape(url: string, regex: string) {
+
+        let response;
+
+        try {
+            response = axios.get(url);
+        } catch {
+            //TODO: log error
+            return [];
+        }
+        
+        
+        const html = (await response).data;
+        const matches = [...html.matchAll(new RegExp(regex, 'g'))];
+
+        return matches.map((match) => {
+            return ( {
+                title: match.groups.title, 
+                link: PressReleaseScraper.parseUrl(match.groups.link, '')
+            })
+        });
     }
 }
 

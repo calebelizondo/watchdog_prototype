@@ -2,7 +2,6 @@ import env from '#start/env'
 import app from '@adonisjs/core/services/app'
 import { Secret } from '@adonisjs/core/helpers'
 import { defineConfig } from '@adonisjs/core/http'
-import configLoader from '../app/utils/ConfigLoader.js'
 import PressReleaseScraper from '../app/utils/PressReleaseScraper.js'
 
 /**
