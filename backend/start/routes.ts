@@ -7,9 +7,11 @@
 |
 */
 
-import router from '@adonisjs/core/services/router'
-import Source from '#models/source'
+import router from '@adonisjs/core/services/router';
+import Source from '#models/source';
+import Article from "#models/article";
 import PressReleaseScraper from '../app/utils/PressReleaseScraper.js';
+import { Scraper } from '#config/app';
 
 
 router.post('/scrape', async (ctx: any) => {
@@ -53,14 +55,66 @@ router.get('/get_source_names', async (ctx: any) => {
 
 });
 
-router.post('/get_source', async (ctx: any) => {
+router.get('/get_source', async ({ request, response }) => {
+  const name = request.qs().name;
 
-  const { name } = ctx.request.only(['name']);
+  if (!name) {
+    return response.status(400).json({ error: "Name parameter is required" });
+  }
+  
+  const source = await Source.findBy({ name });
 
-  console.log("name", name);
+  if (!source) {
+    return response.status(404).json({ error: "Source not found" });
+  }
 
-  return ctx.response.status(201).json({
-    results: (await Source.findBy({name}))
+  return response.status(200).json({
+    results: source,
   });
+});
+
+//mostly for testing purposes, scrapes every source to update articles
+router.get('/update_articles', async ({request, response}) => {
+  PressReleaseScraper.commitReleases(await Scraper.fetchNewPressReleases());
+
+  return response.status(200).json({
+    message: "successful",
+  });
+});
+
+router.get('/latest_articles', async ({request, response}) => {
+
+  //filter by sources (can be undefined)
+  const sources: string[] | undefined = request.qs().sources;
+  //number of articles we want
+  const n: number | undefined = request.qs().n;
+  //how many have we already seen?
+  const offset: number | undefined = request.qs().offset;
+
+  if (!n) {
+    return response.status(400).json({ error: "number of articles (n) required" });
+  }
+
+  if (!offset) {
+    return response.status(400).json({ error: "offset required" });
+  }
+
+  const source_ids = sources ? await Source.query()
+    .whereIn('name', sources)
+    .select('id') 
+    .exec() : undefined; 
+
+  //don't filter by sources
+
+  /*
+  const latest_articles: Article[] = 
+    sources ? await Article.query().whereIn('source_id', source_ids).orderBy('created_at', 'desc').offset(offset).limit(n) : 
+      await Article.query().orderBy('created_at', 'desc').offset(offset).limit(n);
+  */
+  return response.status(200).json({
+    articles: "successful",
+  });
+
+
 
 });

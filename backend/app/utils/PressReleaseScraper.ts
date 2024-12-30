@@ -4,7 +4,7 @@ import axios from 'axios';
 
 export type ReleaseCapture = {
     //where did the article come from?
-    source: string;
+    source_name: string;
     //what is its title?
     title: string;
     //what is the url?
@@ -26,7 +26,7 @@ class PressReleaseScraper {
                         releases.push({
                             title: match.title,
                             url: PressReleaseScraper.parseUrl(match.link, base_url),
-                            source: name
+                            source_name: name
                         })
                     }
                 );
@@ -50,11 +50,13 @@ class PressReleaseScraper {
 
 
     //commit release objects to the database
-    public commitReleases(releases: ReleaseCapture[]) {
+    public static commitReleases(releases: ReleaseCapture[]) {
         for (const release of releases) {
             try {
-                Article.create({...release})
-            } catch {
+                Article.firstOrCreate({url: release.url}, {...release});
+            } catch (error) {
+                console.log(`failed to create article ${release}`);
+                console.log(error);
                 continue;
             }
         }

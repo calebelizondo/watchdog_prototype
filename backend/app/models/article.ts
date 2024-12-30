@@ -5,7 +5,7 @@ import * as relations from '@adonisjs/lucid/types/relations'
 
 export default class Article extends BaseModel {
   @column({ isPrimary: true })
-  declare id: number
+  declare url: string 
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -17,12 +17,11 @@ export default class Article extends BaseModel {
   declare title: string
 
   @column()
-  declare url: string
+  declare source_name: string 
 
-  @column()
-  declare source_id: number  
-
-  @belongsTo(() => Source)
+  @belongsTo(() => Source, {
+    foreignKey: 'source_name', 
+    localKey: 'name', 
+  })
   declare source: relations.BelongsTo<typeof Source>
-
 }

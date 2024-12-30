@@ -5,16 +5,13 @@ import * as relations from '@adonisjs/lucid/types/relations'
 
 export default class Source extends BaseModel {
   @column({ isPrimary: true })
-  declare id: number
+  declare name: string
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
-
-  @column()
-  declare name: string
 
   @column()
   declare url: string
