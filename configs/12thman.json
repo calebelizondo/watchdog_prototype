@@ -4,3 +4,5 @@
     "base_url": "https://12thman.com",
     "regex": "<a href=\"(?<link>[^\"]+)\"[^>]*>[^<]*<span[^>]*>(?<title>.*?)<\/span>.*?<\/a>"
 }
+
+<a href="(?<link>[^"]+)"[^>]*>[^<]*<span[^>]*>(?<title>.*?)</span>.*?</a>

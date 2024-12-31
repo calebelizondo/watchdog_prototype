@@ -1,0 +1,58 @@
+.source-form form {
+    padding-left: 30px;
+}
+
+form .input-group {
+    padding-bottom: 20px;
+}
+
+.add-source-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .form-container {
+    flex: 1; 
+    min-width: 300px; 
+  }
+  
+  .results-container {
+    flex: 1; 
+    min-width: 300px; 
+  }
+  
+  .regex-result {
+    margin-bottom: 10px;
+  }
+  
+  .regex-result a {
+    text-decoration: none;
+    color: #0073e6;
+  }
+  
+  .regex-result h5 {
+    margin: 0;
+    font-size: 1.1em;
+    font-weight: bold;
+  }
+  
+  .regex-result p {
+    margin: 0;
+    font-size: 0.9em;
+    color: gray;
+  }
+  
+  h4 {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+  
+  

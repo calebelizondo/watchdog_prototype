@@ -44,7 +44,7 @@ class PressReleaseScraper {
     };
 
     //replace relative link with absolute if needed
-    private static parseUrl(url: string, base_url: string) {
+    public static parseUrl(url: string, base_url: string) {
         return url.startsWith("http") ? url : base_url + url;
     }
 

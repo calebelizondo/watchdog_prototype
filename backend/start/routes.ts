@@ -14,21 +14,25 @@ import PressReleaseScraper from '../app/utils/PressReleaseScraper.js';
 import { Scraper } from '#config/app';
 
 
-router.post('/scrape', async (ctx: any) => {
+router.get('/scrape', async (ctx: any) => {
   // extract the source details from the request body
-  const { url, regex } = ctx.request.only(['url', 'regex'])
+  const { url, regex, baseUrl } = ctx.request.only(['url', 'regex', 'baseUrl']);
+
+  if (!url || !regex || !baseUrl) {
+    return ctx.response.status(400).json({ error: "missing a param (url, regex, and base_url are required)" });
+  }
 
   // create and save the new source
-  const results = await PressReleaseScraper.scrape(url, regex);
+  const results = await PressReleaseScraper.scrape(url, decodeURIComponent(regex));
 
   // return the created source in the response
   return ctx.response.status(201).json({
-    results: results,
+    results: results.map((match) => {return {title: match.title, url: PressReleaseScraper.parseUrl(match.link, baseUrl)}}),
   })
 });
 
 
-router.post('/post_source', async (ctx: any) => {
+router.post('/add_source', async (ctx: any) => {
   // extract the source details from the request body
   const { name, url, base_url, regex } = ctx.request.only(['name', 'url', 'base_url', 'regex'])
 
@@ -37,7 +41,7 @@ router.post('/post_source', async (ctx: any) => {
     name,
     url,
     base_url,
-    regex
+    regex: decodeURIComponent(regex)
   })
 
   // return the created source in the response
@@ -50,7 +54,7 @@ router.post('/post_source', async (ctx: any) => {
 router.get('/get_source_names', async (ctx: any) => {
 
   return ctx.response.status(201).json({
-    results: (await Source.all()).map((source: Source) => {return source.name})
+    results: (await Source.all()).map((source: Source) => {return {...source.$attributes}})
   });
 
 });
@@ -74,7 +78,7 @@ router.get('/get_source', async ({ request, response }) => {
 });
 
 //mostly for testing purposes, scrapes every source to update articles
-router.get('/update_articles', async ({request, response}) => {
+router.get('/update_articles', async ({response}) => {
   PressReleaseScraper.commitReleases(await Scraper.fetchNewPressReleases());
 
   return response.status(200).json({
